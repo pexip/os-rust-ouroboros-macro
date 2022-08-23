@@ -1,0 +1,19 @@
+Test-Command: /usr/share/cargo/bin/cargo-auto-test ouroboros_macro 0.15.3 --all-targets --all-features
+Features: test-name=rust-ouroboros-macro:@
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
+
+Test-Command: /usr/share/cargo/bin/cargo-auto-test ouroboros_macro 0.15.3 --all-targets 
+Features: test-name=librust-ouroboros-macro-dev:default
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
+
+Test-Command: /usr/share/cargo/bin/cargo-auto-test ouroboros_macro 0.15.3 --all-targets --no-default-features --features std
+Features: test-name=librust-ouroboros-macro-dev:std
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
+
+Test-Command: /usr/share/cargo/bin/cargo-auto-test ouroboros_macro 0.15.3 --all-targets --no-default-features
+Features: test-name=librust-ouroboros-macro-dev:
+Depends: dh-cargo (>= 18), @
+Restrictions: allow-stderr, skip-not-installable
