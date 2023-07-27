@@ -15,7 +15,7 @@ Build-Depends: debhelper (>= 12),
 Maintainer: Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
 Uploaders:
  Dylan Aïssi <daissi@debian.org>
-Standards-Version: 4.5.1
+Standards-Version: 4.6.1
 Vcs-Git: https://salsa.debian.org/rust-team/debcargo-conf.git [src/ouroboros-macro]
 Vcs-Browser: https://salsa.debian.org/rust-team/debcargo-conf/tree/master/src/ouroboros-macro
 X-Cargo-Crate: ouroboros_macro
@@ -41,9 +41,9 @@ Provides:
  librust-ouroboros-macro-0.15-dev (= ${binary:Version}),
  librust-ouroboros-macro-0.15+default-dev (= ${binary:Version}),
  librust-ouroboros-macro-0.15+std-dev (= ${binary:Version}),
- librust-ouroboros-macro-0.15.3-dev (= ${binary:Version}),
- librust-ouroboros-macro-0.15.3+default-dev (= ${binary:Version}),
- librust-ouroboros-macro-0.15.3+std-dev (= ${binary:Version})
+ librust-ouroboros-macro-0.15.6-dev (= ${binary:Version}),
+ librust-ouroboros-macro-0.15.6+default-dev (= ${binary:Version}),
+ librust-ouroboros-macro-0.15.6+std-dev (= ${binary:Version})
 Description: Proc macro for ouroboros crate - Rust source code
  This package contains the source for the Rust ouroboros_macro crate, packaged
  by debcargo for use with cargo and dh-cargo.
