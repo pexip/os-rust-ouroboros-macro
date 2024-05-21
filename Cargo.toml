@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "ouroboros_macro"
-version = "0.15.3"
+version = "0.15.6"
 authors = ["Joshua Maros <joshua-maros@github.com>"]
 description = "Proc macro for ouroboros crate."
 documentation = "https://docs.rs/ouroboros_macro"
