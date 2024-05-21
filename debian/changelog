@@ -2,6 +2,7 @@ rust-ouroboros-macro (0.15.6-1+pexip24u2) pexip; urgency=medium
 
   * Refresh patches
   * Switch to syn2
+  * Drop proc-macro-error
 
  -- Huw Jones <huw@pexip.com>  Tue, 21 May 2024 16:17:24 +0100
 

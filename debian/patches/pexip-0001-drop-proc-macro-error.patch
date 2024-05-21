@@ -1,0 +1,47 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 04b2bd1..b9bc226 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -26,9 +26,6 @@ proc-macro = true
+ version = "0.11"
+ default-features = false
+ 
+-[dependencies.proc-macro-error]
+-version = "1.0.3"
+-
+ [dependencies.proc-macro2]
+ version = "1.0"
+ 
+diff --git a/src/info_structures.rs b/src/info_structures.rs
+index 0894053..4dfaa30 100644
+--- a/src/info_structures.rs
++++ b/src/info_structures.rs
+@@ -213,7 +213,7 @@ impl StructFieldInfo {
+             "guarantee means the value is not covariant.\n\n",
+             "To resolve this error, add #[covariant] or #[not_covariant] to the field.\n",
+         );
+-        proc_macro_error::emit_error!(self.typ, error);
++        //proc_macro_error::emit_error!(self.typ, error);
+     }
+ 
+     pub fn make_constructor_arg_type_impl(
+diff --git a/src/lib.rs b/src/lib.rs
+index b0e5283..1f5a353 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -22,7 +22,6 @@ use info_structures::BuilderType;
+ use proc_macro::TokenStream;
+ use proc_macro2::TokenStream as TokenStream2;
+ use proc_macro2::TokenTree;
+-use proc_macro_error::proc_macro_error;
+ use quote::{format_ident, quote};
+ use syn::{Error, ItemStruct};
+ 
+@@ -114,7 +113,6 @@ fn self_referencing_impl(
+     }))
+ }
+ 
+-#[proc_macro_error]
+ #[proc_macro_attribute]
+ pub fn self_referencing(attr: TokenStream, item: TokenStream) -> TokenStream {
+     let mut options = Options {
