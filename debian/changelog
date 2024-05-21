@@ -1,3 +1,9 @@
+rust-ouroboros-macro (0.15.6-1+pexip24u3) pexip; urgency=medium
+
+  * Fixup deps on syn2 switch
+
+ -- Huw Jones <huw@pexip.com>  Tue, 21 May 2024 16:46:51 +0100
+
 rust-ouroboros-macro (0.15.6-1+pexip24u2) pexip; urgency=medium
 
   * Refresh patches
