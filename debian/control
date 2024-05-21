@@ -10,8 +10,8 @@ Build-Depends: debhelper (>= 12),
  librust-proc-macro-error-1+default-dev (>= 1.0.3-~~) <!nocheck>,
  librust-proc-macro2-1+default-dev <!nocheck>,
  librust-quote-1+default-dev <!nocheck>,
- librust-syn-1+default-dev <!nocheck>,
- librust-syn-1+full-dev <!nocheck>
+ librust-syn-2+default-dev <!nocheck>,
+ librust-syn-2+full-dev <!nocheck>
 Maintainer: Pexip AS <packaging@pexip.com>
 XSBC-Pexip-Original-Maintainer: Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
 XSBC-Pexip-Original-Uploaders:

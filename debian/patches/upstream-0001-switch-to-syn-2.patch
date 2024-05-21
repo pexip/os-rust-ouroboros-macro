@@ -1,0 +1,129 @@
+From b1cbf322e0ffd615619f9a54d20d497be9a8acfa Mon Sep 17 00:00:00 2001
+From: Alex Gaynor <alex.gaynor@gmail.com>
+Date: Sun, 16 Apr 2023 20:24:52 -0400
+Subject: [PATCH] Switch to syn 2.0
+
+As part of this, increases the MSRV to 1.56. Update CI, including getting example tests back to green.
+---
+ Cargo.toml             |  2 +-
+ src/info_structures.rs |  4 ++--
+ src/lib.rs             |  7 +++++--
+ src/parse.rs           | 25 +++++++++++++++----------
+ 7 files changed, 31 insertions(+), 24 deletions(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index 88b2851..04b2bd1 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -36,7 +36,7 @@ version = "1.0"
+ version = "1.0"
+ 
+ [dependencies.syn]
+-version = "1.0"
++version = "2.0"
+ features = ["full"]
+ 
+ [features]
+diff --git a/src/info_structures.rs b/src/info_structures.rs
+index 22e4cde..0894053 100644
+--- a/src/info_structures.rs
++++ b/src/info_structures.rs
+@@ -3,7 +3,7 @@ use proc_macro2::{Ident, TokenStream};
+ use quote::{format_ident, quote, ToTokens};
+ use syn::{
+     punctuated::Punctuated, token::Comma, Attribute, ConstParam, Error, GenericParam, Generics,
+-    LifetimeDef, Type, TypeParam, Visibility,
++    LifetimeParam, Type, TypeParam, Visibility,
+ };
+ 
+ #[derive(Clone, Copy)]
+@@ -98,7 +98,7 @@ impl StructInfo {
+             Type(TypeParam { ident, .. }) | Const(ConstParam { ident, .. }) => {
+                 ident.to_token_stream()
+             }
+-            Lifetime(LifetimeDef { lifetime, .. }) => lifetime.to_token_stream(),
++            Lifetime(LifetimeParam { lifetime, .. }) => lifetime.to_token_stream(),
+         });
+         quote! { <'_, '_, #(#params,)*> }
+     }
+diff --git a/src/lib.rs b/src/lib.rs
+index cd12419..b0e5283 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -50,8 +50,11 @@ fn self_referencing_impl(
+         create_try_builder_and_constructor(&info, options, BuilderType::Sync)?;
+     let (async_try_builder_struct_name, async_try_builder_def, async_try_constructor_def) =
+         create_try_builder_and_constructor(&info, options, BuilderType::Async)?;
+-    let (async_send_try_builder_struct_name, async_send_try_builder_def, async_send_try_constructor_def) =
+-        create_try_builder_and_constructor(&info, options, BuilderType::AsyncSend)?;
++    let (
++        async_send_try_builder_struct_name,
++        async_send_try_builder_def,
++        async_send_try_constructor_def,
++    ) = create_try_builder_and_constructor(&info, options, BuilderType::AsyncSend)?;
+ 
+     let with_defs = make_with_functions(&info, options)?;
+     let (with_all_struct_defs, with_all_fn_defs) = make_with_all_function(&info, options)?;
+diff --git a/src/parse.rs b/src/parse.rs
+index 546aa7c..19e63e9 100644
+--- a/src/parse.rs
++++ b/src/parse.rs
+@@ -1,6 +1,6 @@
+ use proc_macro2::{Delimiter, Span, TokenTree};
+ use quote::format_ident;
+-use syn::{spanned::Spanned, Attribute, Error, Fields, GenericParam, ItemStruct};
++use syn::{spanned::Spanned, Attribute, Error, Fields, GenericParam, ItemStruct, Meta};
+ 
+ use crate::{
+     covariance_detection::type_is_covariant_over_this_lifetime,
+@@ -15,12 +15,14 @@ fn handle_borrows_attr(
+ ) -> Result<(), Error> {
+     let mut borrow_mut = false;
+     let mut waiting_for_comma = false;
+-    let tokens = attr.tokens.clone();
+-    let possible_error = Error::new_spanned(&tokens, "Invalid syntax for borrows() macro.");
+-    let tokens = if let Some(TokenTree::Group(group)) = tokens.into_iter().next() {
+-        group.stream()
+-    } else {
+-        return Err(possible_error);
++    let tokens = match &attr.meta {
++        Meta::List(ml) => ml.tokens.clone(),
++        _ => {
++            return Err(Error::new_spanned(
++                &attr.meta,
++                "Invalid syntax for borrows() macro.",
++            ))
++        }
+     };
+     for token in tokens {
+         if let TokenTree::Ident(ident) = token {
+@@ -113,7 +115,10 @@ fn parse_derive_token(token: &TokenTree) -> Result<Option<Derive>, Error> {
+ }
+ 
+ fn parse_derive_attribute(attr: &Attribute) -> Result<Vec<Derive>, Error> {
+-    let body = &attr.tokens;
++    let body = match &attr.meta {
++        Meta::List(ml) => &ml.tokens,
++        _ => unreachable!(),
++    };
+     if let Some(TokenTree::Group(body)) = body.clone().into_iter().next() {
+         if body.delimiter() != Delimiter::Parenthesis {
+             panic!("TODO: nice error, bad define syntax")
+@@ -144,7 +149,7 @@ pub fn parse_struct(def: &ItemStruct) -> Result<StructInfo, Error> {
+                 let mut covariant = type_is_covariant_over_this_lifetime(&field.ty);
+                 let mut remove_attrs = Vec::new();
+                 for (index, attr) in field.attrs.iter().enumerate() {
+-                    let path = &attr.path;
++                    let path = &attr.path();
+                     if path.leading_colon.is_some() {
+                         continue;
+                     }
+@@ -234,7 +239,7 @@ pub fn parse_struct(def: &ItemStruct) -> Result<StructInfo, Error> {
+     let mut attributes = Vec::new();
+     let mut derives = Vec::new();
+     for attr in &def.attrs {
+-        let p = &attr.path.segments;
++        let p = &attr.path().segments;
+         if p.len() == 0 {
+             return Err(Error::new(p.span(), &format!("Unsupported attribute")));
+         }
